@@ -1,0 +1,86 @@
+﻿@model TrackerAPIWebApp.Models.HealthRecord
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>HealthRecord</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pulse" class="control-label"></label>
+                <input asp-for="Pulse" class="form-control" />
+                <span asp-validation-for="Pulse" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SystolicPressure" class="control-label"></label>
+                <input asp-for="SystolicPressure" class="form-control" />
+                <span asp-validation-for="SystolicPressure" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiastolicPressure" class="control-label"></label>
+                <input asp-for="DiastolicPressure" class="form-control" />
+                <span asp-validation-for="DiastolicPressure" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SleepHours" class="control-label"></label>
+                <input asp-for="SleepHours" class="form-control" />
+                <span asp-validation-for="SleepHours" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BodyTemperature" class="control-label"></label>
+                <input asp-for="BodyTemperature" class="form-control" />
+                <span asp-validation-for="BodyTemperature" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WaterIntakeLiters" class="control-label"></label>
+                <input asp-for="WaterIntakeLiters" class="form-control" />
+                <span asp-validation-for="WaterIntakeLiters" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StressLevel" class="control-label"></label>
+                <input asp-for="StressLevel" class="form-control" />
+                <span asp-validation-for="StressLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Steps" class="control-label"></label>
+                <input asp-for="Steps" class="form-control" />
+                <span asp-validation-for="Steps" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Note" class="control-label"></label>
+                <input asp-for="Note" class="form-control" />
+                <span asp-validation-for="Note" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="MoodOptionId" class="control-label"></label>
+                <select asp-for="MoodOptionId" class ="form-control" asp-items="ViewBag.MoodOptionId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
