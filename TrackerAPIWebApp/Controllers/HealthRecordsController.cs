@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using TrackerAPIWebApp;
 using TrackerAPIWebApp.Models;
 
 namespace TrackerAPIWebApp.Controllers
 {
-    public class HealthRecordsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class HealthRecordsController : ControllerBase
     {
         private readonly TrackerAPIContext _context;
 
@@ -18,147 +20,143 @@ namespace TrackerAPIWebApp.Controllers
             _context = context;
         }
 
-        // GET: HealthRecords
-        public async Task<IActionResult> Index()
+        // GET: api/HealthRecords
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthRecords(
+            DateTime? startDate = null,
+            DateTime? endDate = null,
+            string? tag = null)
         {
-            var trackerAPIContext = _context.HealthRecords.Include(h => h.MoodOption).Include(h => h.User);
-            return View(await trackerAPIContext.ToListAsync());
+            var query = _context.HealthRecords
+                .Include(r => r.MoodOption)
+                .Include(r => r.Tags).ThenInclude(rt => rt.Tag)
+                .Include(r => r.Medications).ThenInclude(rm => rm.Medication)
+                .AsQueryable();
+
+            if (startDate.HasValue)
+                query = query.Where(r => r.Date >= startDate.Value);
+
+            if (endDate.HasValue)
+                query = query.Where(r => r.Date <= endDate.Value);
+
+            if (!string.IsNullOrEmpty(tag))
+                query = query.Where(r => r.Tags.Any(rt => rt.Tag.Name == tag));
+
+            var records = await query
+                .Select(r => new
+                {
+                    r.Id,
+                    r.Date,
+                    r.Pulse,
+                    r.SleepHours,
+                    r.SystolicPressure,
+                    r.DiastolicPressure,
+                    r.BodyTemperature,
+                    r.WaterIntakeLiters,
+                    r.Weight,
+                    r.Steps,
+                    r.StressLevel,
+                    r.Note,
+                    Mood = r.MoodOption != null ? r.MoodOption.Name : "-",
+                    Tags = r.Tags.Select(t => t.Tag.Name),
+                    Medications = r.Medications.Select(m => m.Medication.Name)
+                })
+                .ToListAsync();
+
+            return Ok(records);
         }
 
-        // GET: HealthRecords/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+        // GET: api/HealthRecords/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HealthRecord>> GetHealthRecord(int id)
         {
-            if (id == null)
+            var record = await _context.HealthRecords
+                .Include(r => r.MoodOption)
+                .Include(r => r.Tags).ThenInclude(rt => rt.Tag)
+                .Include(r => r.Medications).ThenInclude(rm => rm.Medication)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (record == null)
             {
                 return NotFound();
             }
 
-            var healthRecord = await _context.HealthRecords
-                .Include(h => h.MoodOption)
-                .Include(h => h.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (healthRecord == null)
-            {
-                return NotFound();
-            }
-
-            return View(healthRecord);
+            return record;
         }
 
-        // GET: HealthRecords/Create
-        public IActionResult Create()
-        {
-            ViewData["MoodOptionId"] = new SelectList(_context.MoodOptions, "Id", "Id");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
-        // POST: HealthRecords/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,Pulse,SystolicPressure,DiastolicPressure,SleepHours,BodyTemperature,WaterIntakeLiters,StressLevel,Steps,Note,UserId,MoodOptionId")] HealthRecord healthRecord)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(healthRecord);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["MoodOptionId"] = new SelectList(_context.MoodOptions, "Id", "Id", healthRecord.MoodOptionId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", healthRecord.UserId);
-            return View(healthRecord);
-        }
-
-        // GET: HealthRecords/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var healthRecord = await _context.HealthRecords.FindAsync(id);
-            if (healthRecord == null)
-            {
-                return NotFound();
-            }
-            ViewData["MoodOptionId"] = new SelectList(_context.MoodOptions, "Id", "Id", healthRecord.MoodOptionId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", healthRecord.UserId);
-            return View(healthRecord);
-        }
-
-        // POST: HealthRecords/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,Pulse,SystolicPressure,DiastolicPressure,SleepHours,BodyTemperature,WaterIntakeLiters,StressLevel,Steps,Note,UserId,MoodOptionId")] HealthRecord healthRecord)
+        // PUT: api/HealthRecords/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutHealthRecord(int id, HealthRecord healthRecord)
         {
             if (id != healthRecord.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(healthRecord);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!HealthRecordExists(healthRecord.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return BadRequest(ModelState);
             }
-            ViewData["MoodOptionId"] = new SelectList(_context.MoodOptions, "Id", "Id", healthRecord.MoodOptionId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", healthRecord.UserId);
-            return View(healthRecord);
+
+            _context.Entry(healthRecord).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!HealthRecordExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: HealthRecords/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: api/HealthRecords
+        [HttpPost]
+        public async Task<ActionResult<HealthRecord>> PostHealthRecord(HealthRecord healthRecord)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            var healthRecord = await _context.HealthRecords
-                .Include(h => h.MoodOption)
-                .Include(h => h.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (healthRecord == null)
-            {
-                return NotFound();
-            }
+            _context.HealthRecords.Add(healthRecord);
+            await _context.SaveChangesAsync();
 
-            return View(healthRecord);
+            // ✅ Найпростіша відповідь без вкладених об'єктів
+            return Ok(new { healthRecord.Id });
         }
 
-        // POST: HealthRecords/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        // DELETE: api/HealthRecords/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteHealthRecord(int id)
         {
-            var healthRecord = await _context.HealthRecords.FindAsync(id);
-            if (healthRecord != null)
+            var record = await _context.HealthRecords
+                .Include(r => r.Tags)
+                .Include(r => r.Medications)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (record == null)
             {
-                _context.HealthRecords.Remove(healthRecord);
+                return NotFound();
             }
+
+            _context.HealthRecordTags.RemoveRange(record.Tags);
+            _context.HealthRecordMedications.RemoveRange(record.Medications);
+            _context.HealthRecords.Remove(record);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool HealthRecordExists(int id)

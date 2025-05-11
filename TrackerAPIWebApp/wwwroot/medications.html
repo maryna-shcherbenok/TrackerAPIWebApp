@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ліки – Трекер</title>
+    <link rel="stylesheet" href="css/mood.css" />
+    <style>
+        textarea {
+            width: 100%;
+            min-height: 60px;
+            resize: vertical;
+            margin-top: 5px;
+        }
+
+        .medication-item {
+            border-bottom: 1px solid #ddd;
+            padding: 8px 0;
+        }
+
+            .medication-item span {
+                font-weight: bold;
+            }
+
+            .medication-item p {
+                margin: 5px 0 10px 0;
+                color: #555;
+            }
+
+            .medication-item button {
+                margin-right: 5px;
+            }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        textarea {
+            display: block;
+            width: 100%;
+            min-height: 60px;
+            padding: 8px;
+            font-family: inherit;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="progress-bar"></div>
+            <h2>Ліки</h2>
+            <p>Додавайте, змінюйте або видаляйте препарати</p>
+
+            <!-- Форма додавання -->
+            <form onsubmit="addMedication(); return false;">
+                <input type="text" id="add-name" placeholder="Назва препарату" required />
+                <textarea id="add-description" placeholder="Опис препарату (необов'язково)"></textarea>
+                <button type="submit" class="primary full">Додати</button>
+            </form>
+
+            <!-- Форма редагування -->
+            <div id="editMedication" class="hidden">
+                <h3>Редагувати препарат</h3>
+                <form onsubmit="updateMedication(); return false;">
+                    <input type="hidden" id="edit-id" />
+                    <input type="text" id="edit-name" required />
+                    <textarea id="edit-description" placeholder="Опис препарату"></textarea>
+                    <div class="buttons">
+                        <button type="submit" class="primary">Зберегти</button>
+                        <button type="button" onclick="closeInput()">Скасувати</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Список -->
+            <div id="medicationList"></div>
+        </div>
+    </div>
+
+    <script src="js/medications.js"></script>
+</body>
+</html>

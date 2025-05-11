@@ -3,9 +3,9 @@
     public class HealthRecordMedication
     {
         public int HealthRecordId { get; set; }
-        public HealthRecord HealthRecord { get; set; } = null!;
+        public HealthRecord? HealthRecord { get; set; }
 
         public int MedicationId { get; set; }
-        public Medication Medication { get; set; } = null!;
+        public Medication? Medication { get; set; }
     }
 }

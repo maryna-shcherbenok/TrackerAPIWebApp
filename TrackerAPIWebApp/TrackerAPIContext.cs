@@ -10,7 +10,6 @@ namespace TrackerAPIWebApp
         {
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<HealthRecord> HealthRecords { get; set; }
         public DbSet<MoodOption> MoodOptions { get; set; }
         public DbSet<Medication> Medications { get; set; }
@@ -22,7 +21,6 @@ namespace TrackerAPIWebApp
         {
             base.OnModelCreating(modelBuilder);
 
-            // HealthRecordMedication – composite key
             modelBuilder.Entity<HealthRecordMedication>()
                 .HasKey(hrm => new { hrm.HealthRecordId, hrm.MedicationId });
 
@@ -36,7 +34,6 @@ namespace TrackerAPIWebApp
                 .WithMany(m => m.HealthRecordMedications)
                 .HasForeignKey(hrm => hrm.MedicationId);
 
-            // HealthRecordTag – composite key
             modelBuilder.Entity<HealthRecordTag>()
                 .HasKey(hrt => new { hrt.HealthRecordId, hrt.TagId });
 

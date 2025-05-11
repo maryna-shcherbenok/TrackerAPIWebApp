@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <title>Головна – Трекер здоров’я</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/uk.global.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .header-bar {
+            background-color: #7c3aed;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+            .header-bar::before {
+                content: "📊";
+                font-size: 24px;
+            }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            margin-top: 40px;
+        }
+
+        #calendar {
+            max-width: 100%;
+            display: block;
+            min-height: 500px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            width: 300px;
+        }
+
+            .modal h3 {
+                margin-top: 0;
+            }
+
+            .modal .close-btn {
+                float: right;
+                font-size: 18px;
+                cursor: pointer;
+                color: #888;
+            }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 60px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 32px;
+            max-width: 1050px;
+        }
+
+        .fade-wrapper {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            text-decoration: none;
+            color: #1f2937;
+            min-height: 160px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .fade-wrapper:hover .dashboard-card {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .icon-circle {
+            background-color: #7c3aed;
+            color: white;
+            font-size: 28px;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 8px;
+            font-size: 20px;
+            color: #7c3aed;
+        }
+
+        .dashboard-card p {
+            margin: 0;
+            font-size: 15px;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .record-list {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .record-card p {
+            margin: 6px 0;
+        }
+
+        .empty {
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            margin-top: 40px;
+        }
+
+        .fc .fc-button {
+            background-color: #7c3aed; /* фіолетовий фон */
+            border: none;
+            color: #ffffff; /* білий текст */
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+            .fc .fc-button:hover {
+                background-color: #6d28d9; /* трохи темніший при наведенні */
+            }
+
+    </style>
+</head>
+<body>
+    <div class="header-bar">Твій трекер здоров’я</div>
+    <div class="container">
+        <div class="dashboard-wrapper">
+            <div class="dashboard">
+                <div class="fade-wrapper">
+                    <a href="mood.html" class="dashboard-card">
+                        <div class="icon-circle">😊</div>
+                        <div>
+                            <h3>Настрої</h3>
+                            <p>Слідкуй за емоційним станом кожного дня. Додай свій настрій, переглянь історію або проаналізуй зміни.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="fade-wrapper">
+                    <a href="tags.html" class="dashboard-card">
+                        <div class="icon-circle">🏷️</div>
+                        <div>
+                            <h3>Теги</h3>
+                            <p>Організуй свої записи за категоріями. Створюй, редагуй і застосовуй теги для кращої структури даних.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="fade-wrapper">
+                    <a href="medications.html" class="dashboard-card">
+                        <div class="icon-circle">💊</div>
+                        <div>
+                            <h3>Ліки</h3>
+                            <p>Зберігай список призначених ліків, дози й режим прийому. Відстежуй, що й коли приймаєш для контролю здоров’я.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="fade-wrapper">
+                    <a href="healthrecords.html" class="dashboard-card">
+                        <div class="icon-circle">🩺</div>
+                        <div>
+                            <h3>Записи</h3>
+                            <p>Фіксуй показники здоров’я: пульс, тиск, температура, сон, стрес, воду та інше — щодня або за потребою.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="fade-wrapper">
+                    <a href="stats.html" class="dashboard-card">
+                        <div class="icon-circle">📈</div>
+                        <div>
+                            <h3>Статистика</h3>
+                            <p>Аналізуй свій стан за допомогою графіків. Отримуй візуальні звіти за тиждень, місяць або будь-який інший період.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="calendar-container">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="overlay"></div>
+    <div class="modal" id="recordModal">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3>Деталі запису</h3>
+        <div id="modalContent"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const modal = document.getElementById('recordModal');
+            const overlay = document.getElementById('overlay');
+            const modalContent = document.getElementById('modalContent');
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'uk',
+                height: 'auto',
+                events: async function (fetchInfo, successCallback, failureCallback) {
+                    try {
+                        const res = await fetch('/api/healthrecords');
+                        const data = await res.json();
+                        const events = data.map(r => ({
+                            title: '📌 Запис',
+                            backgroundColor: '#7c3aed',  // фіолетовий фон
+                            borderColor: '#7c3aed',      // щоб не було рамки іншого кольору
+                            textColor: '#ffffff',        // білий текст для контрасту
+                            date: r.date,
+                            allDay: true,
+                            extendedProps: r
+                        }));
+                        successCallback(events);
+                    } catch (err) {
+                        failureCallback(err);
+                    }
+                },
+                eventClick: function (info) {
+                    const r = info.event.extendedProps;
+                    modalContent.innerHTML = `
+                    <p><strong>Дата:</strong> ${r.date?.split('T')[0]}</p>
+                    <p><strong>Пульс:</strong> ${r.pulse ?? '-'}</p>
+                    <p><strong>Сон:</strong> ${r.sleepHours ?? '-'} год</p>
+                    <p><strong>Вода:</strong> ${r.waterIntakeLiters ?? '-'} л</p>
+
+                    <p><strong>Температура:</strong> ${r.bodyTemperature ?? '-'}</p>
+                    <p><strong>Вага:</strong> ${r.weight ?? '-'} кг</p>
+
+                    <p><strong>Стрес:</strong> ${r.stressLevel ?? '-'}</p>
+                    <p><strong>Кроків:</strong> ${r.steps ?? '-'}</p>
+
+                    <p><strong>Настрій:</strong> ${r.mood ?? '-'}</p>
+                    <p><strong>Нотатка:</strong> ${r.note ?? ''}</p>
+                  `;
+                    modal.style.display = 'block';
+                    overlay.style.display = 'block';
+                }
+            });
+
+            calendar.render();
+
+            window.closeModal = function () {
+                modal.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <title>Записи здоровʼя</title>
+    <link rel="stylesheet" href="css/mood.css" />
+    <style>
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+            .form-row input, .form-row select {
+                flex: 1;
+            }
+
+        .grid-2, .grid-3 {
+            display: grid;
+            gap: 10px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .stress-grid label {
+            display: inline-block;
+            cursor: pointer;
+            font-size: 24px;
+            margin-right: 5px;
+        }
+
+            .stress-grid label.selected {
+                border: 2px solid #666;
+                border-radius: 5px;
+                padding: 2px;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Записи здоровʼя</h2>
+            <p>Додавайте щоденні показники</p>
+
+            <form onsubmit="addRecord(); return false;">
+                <input type="date" id="date" required />
+
+                <div class="grid-3">
+                    <input type="number" id="pulse" placeholder="Пульс" />
+                    <input type="number" id="systolic" placeholder="Систолічний" />
+                    <input type="number" id="diastolic" placeholder="Діастолічний" />
+                </div>
+
+                <div class="grid-3">
+                    <input type="number" id="sleep" placeholder="Сон (год)" step="0.1" />
+                    <input type="number" id="temperature" placeholder="Температура" step="0.1" />
+                    <input type="number" id="water" placeholder="Вода (л)" step="0.1" />
+                </div>
+
+                <div class="grid-2">
+                    <input type="number" id="steps" placeholder="Кроків" />
+                    <input type="number" id="weight" placeholder="Вага (кг)" step="0.1" />
+                </div>
+
+                <div class="grid-2">
+                    <div id="stress-picker" class="stress-grid">
+                        <label data-value="0">😌</label>
+                        <label data-value="1">🙂</label>
+                        <label data-value="2">😐</label>
+                        <label data-value="3">😟</label>
+                        <label data-value="4">😣</label>
+                        <label data-value="5">😫</label>
+                    </div>
+                    <input type="hidden" id="stress" name="stressLevel" />
+                </div>
+
+                <div class="form-row">
+                    <select id="moodOptionId" required>
+                        <option value="">Оберіть настрій</option>
+                    </select>
+                    <input type="text" id="newMood" placeholder="Новий настрій" />
+                    <button type="button" onclick="addMood()">+</button>
+                </div>
+
+                <div class="form-row">
+                    <select id="tagSelect" multiple></select>
+                    <select id="medicationSelect" multiple></select>
+                </div>
+
+                <input type="text" id="note" placeholder="Нотатка" />
+
+                <button type="submit" class="primary full">Додати запис</button>
+            </form>
+
+            <div id="recordList" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <script src="js/healthrecords.js"></script>
+</body>
+</html>

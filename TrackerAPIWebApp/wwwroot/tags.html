@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <title>Теги – Трекер</title>
+    <link rel="stylesheet" href="css/mood.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="progress-bar"></div>
+            <h2>Теги</h2>
+            <p>Додавайте, змінюйте або видаляйте теги для записів</p>
+
+            <form onsubmit="addTag(); return false;">
+                <input type="text" id="add-name" placeholder="Назва тегу" required />
+                <button type="submit" class="primary full">Додати</button>
+            </form>
+
+            <div id="editTag" class="hidden">
+                <h3>Редагувати тег</h3>
+                <form onsubmit="updateTag(); return false;">
+                    <input type="hidden" id="edit-id" />
+                    <input type="text" id="edit-name" required />
+                    <div class="buttons">
+                        <button type="submit" class="primary">Зберегти</button>
+                        <button type="button" onclick="closeInput()">Скасувати</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="tagList"></div>
+        </div>
+    </div>
+    <script src="js/tags.js"></script>
+</body>
+</html>

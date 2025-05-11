@@ -16,10 +16,9 @@
         public int? StressLevel { get; set; }
         public int? Steps { get; set; }
 
-        public string? Note { get; set; }
+        public float? Weight { get; set; }       
 
-        public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        public string? Note { get; set; }
 
         public int? MoodOptionId { get; set; }
         public MoodOption? MoodOption { get; set; }
