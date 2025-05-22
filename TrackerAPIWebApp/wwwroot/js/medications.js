@@ -8,39 +8,40 @@ function getMedications() {
 }
 
 function displayMedications(medications) {
-    const list = document.getElementById('medicationList');
-    list.innerHTML = '';
+    const container = document.getElementById('medicationList');
+    container.innerHTML = '';
 
     if (medications.length === 0) {
-        list.innerHTML = '<p>Немає препаратів.</p>';
+        container.innerHTML = '<p>Немає препаратів.</p>';
         return;
     }
 
-    medications.forEach(m => {
+    medications.forEach(med => {
         const div = document.createElement('div');
-        div.className = 'medication-item';
+        div.className = 'mood-item';
 
         const name = document.createElement('span');
-        name.textContent = m.name;
+        name.textContent = med.name;
 
-        const description = document.createElement('p');
-        description.textContent = m.description || '';
+        const actions = document.createElement('div');
 
         const editBtn = document.createElement('button');
-        editBtn.textContent = '✏️';
+        editBtn.textContent = '✎';
         editBtn.title = 'Редагувати';
-        editBtn.onclick = () => editMedication(m);
+        editBtn.onclick = () => editMedication(med);
 
         const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = '🗑️';
+        deleteBtn.textContent = '🗑';
         deleteBtn.title = 'Видалити';
-        deleteBtn.onclick = () => deleteMedication(m.id);
+        deleteBtn.onclick = () => deleteMedication(med.id);
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
 
         div.appendChild(name);
-        div.appendChild(description);
-        div.appendChild(editBtn);
-        div.appendChild(deleteBtn);
-        list.appendChild(div);
+        div.appendChild(actions);
+
+        container.appendChild(div);
     });
 }
 

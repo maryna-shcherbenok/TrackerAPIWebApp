@@ -120,7 +120,6 @@ namespace TrackerAPIWebApp.Controllers
             return NoContent();
         }
 
-        // POST: api/HealthRecords
         [HttpPost]
         public async Task<ActionResult<HealthRecord>> PostHealthRecord(HealthRecord healthRecord)
         {
@@ -129,10 +128,18 @@ namespace TrackerAPIWebApp.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Перевірка: чи вже є запис на цю дату
+            bool alreadyExists = await _context.HealthRecords
+                .AnyAsync(r => r.Date.Date == healthRecord.Date.Date);
+
+            if (alreadyExists)
+            {
+                return Conflict("На цю дату запис уже існує.");
+            }
+
             _context.HealthRecords.Add(healthRecord);
             await _context.SaveChangesAsync();
 
-            // ✅ Найпростіша відповідь без вкладених об'єктів
             return Ok(new { healthRecord.Id });
         }
 

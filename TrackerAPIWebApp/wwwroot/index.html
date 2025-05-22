@@ -10,27 +10,39 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            background-color: #f3f4f6;
+            background: url('/img/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         .header-bar {
             background-color: #7c3aed;
             color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
+            padding: 20px 40px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            justify-content: flex-start;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-            .header-bar::before {
-                content: "📊";
-                font-size: 24px;
-            }
+        .logo-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            font-weight: normal;
+            opacity: 0.9;
+        }
 
         .container {
             max-width: 1200px;
@@ -91,14 +103,14 @@
         .dashboard-wrapper {
             display: flex;
             justify-content: center;
-            margin-top: 60px;
+            margin-top: 30px;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(4, 1fr); /* 4 картки в ряд */
             gap: 32px;
-            max-width: 1050px;
+            justify-items: center; /* центрує кожну картку в колонці */
         }
 
         .fade-wrapper {
@@ -124,7 +136,7 @@
             align-items: flex-start;
             text-decoration: none;
             color: #1f2937;
-            min-height: 160px;
+            height: 200px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -189,19 +201,70 @@
                 background-color: #6d28d9; /* трохи темніший при наведенні */
             }
 
+        .delete-btn {
+            background-color: #7c3aed;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+            .delete-btn:hover {
+                background-color: #6d28d9;
+                transform: scale(1.05);
+            }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 13px;
+            background-color: #e9d8fd;
+            color: #5a189a;
+            border-radius: 20px;
+            line-height: 1;
+            margin: 2px 4px;
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            min-width: 180px;
+        }
     </style>
 </head>
 <body>
-    <div class="header-bar">Твій трекер здоров’я</div>
+    <div class="header-bar">
+        <div class="logo-title">
+            <span class="logo-text">myTracker</span>
+            <span class="subtitle">Твій трекер здоров’я</span>
+        </div>
+    </div>
     <div class="container">
         <div class="dashboard-wrapper">
             <div class="dashboard">
-                <div class="fade-wrapper">
+                <!-- Картка з настроем, можливо, поверну -->
+                <!-- <div class="fade-wrapper">
                     <a href="mood.html" class="dashboard-card">
                         <div class="icon-circle">😊</div>
                         <div>
                             <h3>Настрої</h3>
                             <p>Слідкуй за емоційним станом кожного дня. Додай свій настрій, переглянь історію або проаналізуй зміни.</p>
+                        </div>
+                    </a>
+                </div> -->
+                <div class="fade-wrapper">
+                    <a href="healthrecords.html" class="dashboard-card">
+                        <div class="icon-circle">🩺</div>
+                        <div>
+                            <h3>Записи</h3>
+                            <p>Фіксуй показники здоров’я: пульс, тиск, температура, сон, стрес, воду та інше — щодня або за потребою.</p>
                         </div>
                     </a>
                 </div>
@@ -220,15 +283,6 @@
                         <div>
                             <h3>Ліки</h3>
                             <p>Зберігай список призначених ліків, дози й режим прийому. Відстежуй, що й коли приймаєш для контролю здоров’я.</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="fade-wrapper">
-                    <a href="healthrecords.html" class="dashboard-card">
-                        <div class="icon-circle">🩺</div>
-                        <div>
-                            <h3>Записи</h3>
-                            <p>Фіксуй показники здоров’я: пульс, тиск, температура, сон, стрес, воду та інше — щодня або за потребою.</p>
                         </div>
                     </a>
                 </div>
@@ -272,12 +326,12 @@
                         const data = await res.json();
                         const events = data.map(r => ({
                             title: '📌 Запис',
-                            backgroundColor: '#7c3aed',  // фіолетовий фон
-                            borderColor: '#7c3aed',      // щоб не було рамки іншого кольору
-                            textColor: '#ffffff',        // білий текст для контрасту
+                            backgroundColor: '#7c3aed',
+                            borderColor: '#7c3aed',
+                            textColor: '#ffffff',
                             date: r.date,
                             allDay: true,
-                            extendedProps: r
+                            extendedProps: { ...r }
                         }));
                         successCallback(events);
                     } catch (err) {
@@ -286,21 +340,31 @@
                 },
                 eventClick: function (info) {
                     const r = info.event.extendedProps;
+
+                    const tagsHtml = (r.tags?.length > 0)
+                        ? r.tags.map(t => `<span class="badge">🏷️ ${t}</span>`).join(' ')
+                        : '—';
+
+                    const medsHtml = (r.medications?.length > 0)
+                        ? r.medications.map(m => `<span class="badge">💊 ${m}</span>`).join(' ')
+                        : '—';
+
                     modalContent.innerHTML = `
-                    <p><strong>Дата:</strong> ${r.date?.split('T')[0]}</p>
-                    <p><strong>Пульс:</strong> ${r.pulse ?? '-'}</p>
-                    <p><strong>Сон:</strong> ${r.sleepHours ?? '-'} год</p>
-                    <p><strong>Вода:</strong> ${r.waterIntakeLiters ?? '-'} л</p>
+                        <p><strong>Дата:</strong> ${r.date?.split('T')[0]}</p>
+                        <p><strong>Пульс:</strong> ${r.pulse ?? '-'}</p>
+                        <p><strong>Сон:</strong> ${r.sleepHours ?? '-'} год</p>
+                        <p><strong>Вода:</strong> ${r.waterIntakeLiters ?? '-'} л</p>
+                        <p><strong>Температура:</strong> ${r.bodyTemperature ?? '-'}</p>
+                        <p><strong>Вага:</strong> ${r.weight ?? '-'} кг</p>
+                        <p><strong>Стрес:</strong> ${r.stressLevel ?? '-'} з 5</p>
+                        <p><strong>Кроків:</strong> ${r.steps ?? '-'}</p>
+                        <p><strong>Настрій:</strong> ${r.mood ?? '-'}</p>
+                        <p><strong>Нотатка:</strong> ${r.note ?? ''}</p>
+                        <p><strong>Теги:</strong><br/> ${tagsHtml}</p>
+                        <p><strong>Ліки:</strong><br/> ${medsHtml}</p>
+                        <button class="delete-btn" onclick="deleteRecord(${r.id})">🗑 Видалити запис</button>
+                    `;
 
-                    <p><strong>Температура:</strong> ${r.bodyTemperature ?? '-'}</p>
-                    <p><strong>Вага:</strong> ${r.weight ?? '-'} кг</p>
-
-                    <p><strong>Стрес:</strong> ${r.stressLevel ?? '-'}</p>
-                    <p><strong>Кроків:</strong> ${r.steps ?? '-'}</p>
-
-                    <p><strong>Настрій:</strong> ${r.mood ?? '-'}</p>
-                    <p><strong>Нотатка:</strong> ${r.note ?? ''}</p>
-                  `;
                     modal.style.display = 'block';
                     overlay.style.display = 'block';
                 }
@@ -312,7 +376,18 @@
                 modal.style.display = 'none';
                 overlay.style.display = 'none';
             }
+
+            window.deleteRecord = function (id) {
+                if (!confirm('Ви впевнені, що хочете видалити цей запис?')) return;
+
+                fetch(`/api/healthrecords/${id}`, { method: 'DELETE' })
+                    .then(() => {
+                        calendar.refetchEvents();
+                        closeModal();
+                    })
+                    .catch(err => alert('Помилка при видаленні: ' + err.message));
+            }
         });
     </script>
 </body>
-</html>
+    </html>
